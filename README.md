@@ -1,1 +1,1 @@
-# Cr-tinIA
+# CrétinIA
