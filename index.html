@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrétinIA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(180deg, #4267B2 0%, #5b7cc5 15%, #1e3a8a 35%, #6366f1 55%, #a855f7 70%, #f97316 90%, #fb923c 100%);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  #premium-modal, #plus-menu, #school-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+  }
+  
+  #premium-modal.show, #plus-menu.show, #school-modal.show { display: flex; }
+  
+  #plus-menu {
+    background: transparent;
+    align-items: flex-end;
+    padding-bottom: 6rem;
+  }
+  
+  .plus-menu-content {
+    background: rgba(30, 58, 138, 0.95);
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    min-width: 250px;
+  }
+  
+  .plus-menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.3);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .plus-menu-btn:hover {
+    background: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  .plus-menu-icon {
+    font-size: 1.5rem;
+  }
+  
+  .premium-card, .school-card {
+    background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+    border: 4px solid #fbbf24;
+    border-radius: 24px;
+    max-width: 500px;
+    width: 100%;
+    padding: 2rem;
+  }
+  
+  .premium-title, .school-title {
+    text-align: center;
+    color: #fbbf24;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+  }
+  
+  .premium-subtitle {
+    text-align: center;
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .premium-features {
+    background: rgba(0,0,0,0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .premium-feature {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+  }
+  
+  .premium-price {
+    text-align: center;
+    color: #fbbf24;
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 0.3rem;
+  }
+  
+  .premium-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    border: none;
+    border-radius: 12px;
+    color: #1e3a8a;
+    font-size: 1.3rem;
+    font-weight: 900;
+    cursor: pointer;
+    margin-bottom: 0.8rem;
+  }
+  
+  .premium-later {
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .school-select, .school-input {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 12px;
+    border: 2px solid #fbbf24;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    outline: none;
+  }
+  
+  .school-select option {
+    background: #1e3a8a;
+    color: white;
+  }
+  
+  #header {
+    background: linear-gradient(135deg, #4267B2 0%, #5b7cc5 100%);
+    color: white;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  #menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+  
+  #ai-avatar {
+    width: 55px;
+    height: 55px;
+    cursor: pointer;
+    animation: wiggle 3s infinite;
+  }
+  
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg) translateY(0); }
+    10% { transform: rotate(-5deg) translateY(-3px); }
+    20% { transform: rotate(5deg) translateY(-3px); }
+    30% { transform: rotate(-5deg) translateY(0); }
+    40% { transform: rotate(0deg) translateY(0); }
+  }
+  
+  #header-center {
+    flex: 1;
+  }
+  
+  #header-center h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  
+  #header-center p {
+    font-size: 0.75rem;
+  }
+  
+  #premium-badge {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #1e3a8a;
+    padding: 0.5rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.3;
+  }
+  
+  #messages { 
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+  
+  .message {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .message-user {
+    flex-direction: row-reverse;
+  }
+  
+  .avatar {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+  
+  .message-bubble {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.8rem 1rem;
+    border-radius: 14px;
+    border-top-left-radius: 2px;
+    max-width: 75%;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .message-user .message-bubble {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 2px;
+  }
+  
+  .joke {
+    color: #fbbf24;
+    font-style: italic;
+    margin-bottom: 0.3rem;
+  }
+  
+  .real {
+    white-space: pre-wrap;
+  }
+  
+  #input-container {
+    padding: 0.7rem 0.8rem;
+    background: rgba(139, 92, 246, 0.3);
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  #plus-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  #user-input {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 0.85rem;
+    outline: none;
+  }
+  
+  #user-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  #send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  
+  #sidebar {
+    position: fixed;
+    left: -320px;
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    background: rgba(30, 58, 138, 0.98);
+    transition: left 0.3s;
+    z-index: 1000;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #sidebar.open { left: 0; }
+  
+  #sidebar-header {
+    padding: 1rem;
+    background: rgba(249, 115, 22, 0.2);
+  }
+  
+  #sidebar-header h2 {
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #new-chat-btn {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  #chat-list {
+    padding: 0.7rem;
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  #sidebar-footer {
+    padding: 1rem;
+    background: rgba(249, 115, 22, 0.2);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  #login-btn {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .chat-item {
+    padding: 0.7rem;
+    margin-bottom: 0.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .chat-item:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .chat-item-title {
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 999;
+  }
+  
+  #overlay.show { display: block; }
+  
+  #photo-input {
+    display: none;
+  }
+  
+  #photo-preview {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  #photo-preview.show { display: flex; }
+  
+  #photo-preview img {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 16px;
+    border: 3px solid #f97316;
+  }
+  
+  .photo-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .photo-btn {
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  
+  .photo-send {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+  }
+  
+  .photo-cancel {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+  }
+  
+  #voice-recording {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    display: none;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1500;
+    animation: pulse 1.5s infinite;
+  }
+  
+  #voice-recording.show { display: flex; }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+  }
+  
+  .recording-dot {
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  
+  #login-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+  }
+  
+  #login-modal.show { display: flex; }
+  
+  .login-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    border: 4px solid #f97316;
+    border-radius: 24px;
+    max-width: 400px;
+    width: 100%;
+    padding: 2rem;
+  }
+  
+  .login-title {
+    text-align: center;
+    color: #f97316;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-input {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 12px;
+    border: 2px solid #f97316;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    outline: none;
+  }
+  
+  .login-input::placeholder {
+    color: rgba(255,255,255,0.6);
+  }
+
+</style>
+</head>
+<body>
+
+<div id="premium-modal">
+  <div class="premium-card">
+    <div class="premium-title">⚡ PREMIUM ⚡</div>
+    <div class="premium-subtitle">Tu as atteint la limite gratuite !</div>
+    
+    <div class="premium-features">
+      <div class="premium-feature">
+        <span>✅</span>
+        <span><strong>Messages illimités</strong></span>
+      </div>
+      <div class="premium-feature">
+        <span>🧠</span>
+        <span><strong>IA plus intelligente</strong></span>
+      </div>
+      <div class="premium-feature">
+        <span>🚀</span>
+        <span><strong>Réponses plus rapides</strong></span>
+      </div>
+      <div class="premium-feature">
+        <span>🎯</span>
+        <span><strong>Réponses directes</strong></span>
+      </div>
+    </div>
+    
+    <div class="premium-price">0,99 €</div>
+    <div class="premium-subtitle">Par an seulement ! 🎉</div>
+    
+    <button class="premium-btn" onclick="activatePremium()">🎉 Passer à Premium !</button>
+    <button class="premium-later" onclick="closePremiumModal()">Plus tard</button>
+  </div>
+</div>
+
+<div id="plus-menu">
+  <div class="plus-menu-content">
+    <button class="plus-menu-btn" onclick="openSchoolModal()">
+      <span class="plus-menu-icon">📚</span>
+      <span>Entraînement École</span>
+    </button>
+    <button class="plus-menu-btn" onclick="openPhotoUpload()">
+      <span class="plus-menu-icon">📷</span>
+      <span>Envoyer une photo</span>
+    </button>
+    <button class="plus-menu-btn" onclick="startVoiceRecording()">
+      <span class="plus-menu-icon">🎤</span>
+      <span>Message vocal</span>
+    </button>
+  </div>
+</div>
+
+<div id="school-modal">
+  <div class="school-card">
+    <div class="school-title">📚 École</div>
+    <div class="premium-subtitle">Génère des exercices</div>
+    
+    <select class="school-select" id="school-subject">
+      <option value="">Matière...</option>
+      <option value="maths">Mathématiques</option>
+      <option value="francais">Français</option>
+      <option value="physique">Physique</option>
+      <option value="svt">SVT</option>
+      <option value="histoire">Histoire</option>
+    </select>
+    
+    <select class="school-select" id="school-level">
+      <option value="">Niveau...</option>
+      <option value="cm1">CM1</option>
+      <option value="cm2">CM2</option>
+      <option value="6eme">6ème</option>
+      <option value="5eme">5ème</option>
+      <option value="4eme">4ème</option>
+      <option value="3eme">3ème</option>
+      <option value="seconde">Seconde</option>
+      <option value="premiere">Première</option>
+      <option value="terminale">Terminale</option>
+    </select>
+    
+    <input class="school-input" id="school-chapter" placeholder="Chapitre (optionnel)...">
+    
+    <button class="premium-btn" onclick="generateExercises()">🚀 Générer</button>
+    <button class="premium-later" onclick="closeSchoolModal()">Annuler</button>
+  </div>
+</div>
+
+<div id="photo-preview">
+  <img id="preview-image" src="" alt="Aperçu">
+  <div class="photo-buttons">
+    <button class="photo-btn photo-send" onclick="sendPhoto()">📤 Envoyer</button>
+    <button class="photo-btn photo-cancel" onclick="cancelPhoto()">❌ Annuler</button>
+  </div>
+</div>
+
+<div id="voice-recording">
+  <div class="recording-dot"></div>
+  <span>🎤 Enregistrement en cours...</span>
+</div>
+
+<div id="login-modal">
+  <div class="login-card">
+    <div class="login-title">🔐 Se connecter</div>
+    
+    <input class="login-input" id="login-username" placeholder="Pseudo">
+    <input class="login-input" id="login-email" type="email" placeholder="Email">
+    <input class="login-input" id="login-password" type="password" placeholder="Mot de passe">
+    
+    <button class="premium-btn" onclick="handleLogin()">✅ Se connecter</button>
+    <button class="premium-later" onclick="closeLoginModal()">Annuler</button>
+  </div>
+</div>
+
+<input type="file" id="photo-input" accept="image/*">
+
+<div id="overlay"></div>
+
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h2>💬 Conversations</h2>
+    <button id="new-chat-btn">+ Nouvelle</button>
+  </div>
+  <div id="chat-list"></div>
+  <div id="sidebar-footer">
+    <button id="login-btn" onclick="showLoginModal()">
+      <span>📷</span>
+      <span>Se connecter</span>
+    </button>
+  </div>
+</div>
+
+<div id="header">
+  <button id="menu-btn">☰</button>
+  <svg id="ai-avatar" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Forme de point d'interrogation -->
+    <path d="M 70 40 Q 70 20, 100 20 Q 130 20, 130 50 Q 130 70, 100 80 L 100 100" 
+          fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="100" cy="120" r="8" fill="white"/>
+    
+    <!-- Yeux -->
+    <ellipse cx="85" cy="55" rx="8" ry="12" fill="white"/>
+    <ellipse cx="115" cy="55" rx="8" ry="12" fill="white"/>
+    <circle cx="85" cy="57" r="4" fill="#1e1b4b"/>
+    <circle cx="115" cy="57" r="4" fill="#1e1b4b"/>
+    
+    <!-- Bouche souriante -->
+    <path d="M 75 145 Q 100 160, 125 145" 
+          fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  </svg>
+  <div id="header-center">
+    <h1>CrétinIA</h1>
+    <p>Votre IA un peu débile</p>
+  </div>
+  <div id="premium-badge" onclick="showPremiumModal()">⭐<br>Premium</div>
+</div>
+
+<div id="messages"></div>
+
+<div id="input-container">
+  <button id="plus-btn" onclick="togglePlusMenu()">+</button>
+  <input type="text" id="user-input" placeholder="Écris ton message...">
+  <button id="send-btn" onclick="sendMessage()">🚀</button>
+</div>
+
+<script>
+let chats = [];
+let currentChatId = null;
+let currentChat = [];
+let messageCount = 0;
+let isPremium = false;
+let isLoggedIn = false;
+let username = '';
+let currentPhoto = null;
+let recognition = null;
+const FREE_LIMIT = 25;
+
+function showLoginModal() {
+  document.getElementById('login-modal').classList.add('show');
+}
+
+function closeLoginModal() {
+  document.getElementById('login-modal').classList.remove('show');
+}
+
+function handleLogin() {
+  const usernameInput = document.getElementById('login-username').value.trim();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+  
+  if (!usernameInput || !email || !password) {
+    alert('⚠️ Remplis tous les champs !');
+    return;
+  }
+  
+  if (!email.includes('@')) {
+    alert('⚠️ Email invalide !');
+    return;
+  }
+  
+  isLoggedIn = true;
+  username = usernameInput;
+  
+  document.getElementById('login-btn').innerHTML = `<span>👤</span><span>${username}</span>`;
+  document.getElementById('login-btn').style.background = 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)';
+  document.getElementById('login-btn').onclick = null;
+  
+  closeLoginModal();
+  alert(`✅ Connecté en tant que ${username} ! 🎉`);
+}
+
+function showPremiumModal() {
+  document.getElementById('premium-modal').classList.add('show');
+}
+
+function closePremiumModal() {
+  document.getElementById('premium-modal').classList.remove('show');
+}
+
+function togglePlusMenu() {
+  const menu = document.getElementById('plus-menu');
+  menu.classList.toggle('show');
+}
+
+function openSchoolModal() {
+  document.getElementById('plus-menu').classList.remove('show');
+  document.getElementById('school-modal').classList.add('show');
+}
+
+function closeSchoolModal() {
+  document.getElementById('school-modal').classList.remove('show');
+}
+
+function openPhotoUpload() {
+  document.getElementById('plus-menu').classList.remove('show');
+  document.getElementById('photo-input').click();
+}
+
+function cancelPhoto() {
+  document.getElementById('photo-preview').classList.remove('show');
+  currentPhoto = null;
+}
+
+function sendPhoto() {
+  if (currentPhoto) {
+    addMessage('📷 [Photo envoyée]', true);
+    document.getElementById('photo-preview').classList.remove('show');
+    
+    // Afficher un message de chargement
+    addMessage('🔄 Analyse de la photo...', false);
+    
+    // Analyser la photo avec l'API
+    analyzePhoto(currentPhoto);
+  }
+  
+  currentPhoto = null;
+}
+
+async function analyzePhoto(imageData) {
+  try {
+    // Extraire les données base64 (enlever le préfixe data:image/...)
+    const base64Data = imageData.split(',')[1];
+    const mediaType = imageData.split(';')[0].split(':')[1];
+    
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        messages: [{
+          role: "user",
+          content: [
+            {
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: mediaType,
+                data: base64Data
+              }
+            },
+            {
+              type: "text",
+              text: isPremium 
+                ? "Analyse cette image en détail. Décris ce que tu vois, identifie les objets, animaux, plantes, ou texte. Si c'est un exercice de maths, résous-le étape par étape. Si c'est du texte dans une autre langue, traduis-le en français."
+                : "Analyse cette image. En deux parties : 1) Une blague légère sur ce que tu vois (1 ligne) 2) Puis 😄 et une analyse complète : décris ce que tu vois, identifie les objets/animaux/plantes, résous les exercices de maths si présents, traduis le texte étranger en français."
+            }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const fullText = data.content[0].text;
+    
+    // Retirer le message de chargement
+    const messages = document.getElementById('messages');
+    messages.removeChild(messages.lastChild);
+    
+    if (isPremium) {
+      addMessage({ real: fullText }, false);
+    } else {
+      // Séparer blague et analyse
+      const parts = fullText.split(/😄|:smile:|🙂/);
+      if (parts.length >= 2) {
+        addMessage({ 
+          joke: parts[0].trim(), 
+          real: parts.slice(1).join('').trim() 
+        }, false);
+      } else {
+        const lines = fullText.split('\n').filter(l => l.trim());
+        if (lines.length >= 2) {
+          addMessage({
+            joke: lines[0].trim(),
+            real: lines.slice(1).join('\n').trim()
+          }, false);
+        } else {
+          addMessage({ 
+            joke: "Photo analysée ! 📸", 
+            real: fullText 
+          }, false);
+        }
+      }
+    }
+    
+  } catch (error) {
+    // Retirer le message de chargement
+    const messages = document.getElementById('messages');
+    messages.removeChild(messages.lastChild);
+    
+    addMessage({ 
+      joke: "Oups, problème d'analyse ! 🔧", 
+      real: "Désolé, je n'ai pas pu analyser la photo. Réessaie ou décris-moi ce qu'il y a dessus !" 
+    }, false);
+  }
+}
+
+function startVoiceRecording() {
+  document.getElementById('plus-menu').classList.remove('show');
+  
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('🎤 La reconnaissance vocale n\'est pas supportée sur ton navigateur. Essaie avec Chrome ou Edge !');
+    return;
+  }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'fr-FR';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  
+  document.getElementById('voice-recording').classList.add('show');
+  
+  recognition.start();
+  
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('user-input').value = transcript;
+    document.getElementById('voice-recording').classList.remove('show');
+  };
+  
+  recognition.onerror = (event) => {
+    document.getElementById('voice-recording').classList.remove('show');
+    if (event.error === 'no-speech') {
+      alert('🎤 Je n\'ai rien entendu. Réessaie !');
+    } else {
+      alert('❌ Erreur vocal : ' + event.error);
+    }
+  };
+  
+  recognition.onend = () => {
+    document.getElementById('voice-recording').classList.remove('show');
+  };
+}
+
+document.getElementById('photo-input').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      currentPhoto = event.target.result;
+      document.getElementById('preview-image').src = currentPhoto;
+      document.getElementById('photo-preview').classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  }
+  e.target.value = '';
+});
+
+async function generateExercises() {
+  const subject = document.getElementById('school-subject').value;
+  const level = document.getElementById('school-level').value;
+  const chapter = document.getElementById('school-chapter').value;
+  
+  if (!subject || !level) {
+    alert('⚠️ Choisis matière et niveau !');
+    return;
+  }
+  
+  closeSchoolModal();
+  
+  const query = `Génère des exercices de ${subject} niveau ${level}${chapter ? ' chapitre ' + chapter : ''}`;
+  document.getElementById('user-input').value = query;
+  sendMessage();
+}
+
+function activatePremium() {
+  if (confirm('Paiement de 0,99 € - Confirmer ?')) {
+    isPremium = true;
+    document.getElementById('premium-badge').style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    document.getElementById('premium-badge').style.color = 'white';
+    document.getElementById('premium-badge').innerHTML = '✓<br>Premium';
+    document.getElementById('header-center').querySelector('p').textContent = '⭐ Premium - IA Intelligente !';
+    closePremiumModal();
+    alert('✅ Premium activé ! Merci ! 🎉');
+  }
+}
+
+function createNewChat() {
+  const chatId = Date.now();
+  chats.unshift({
+    id: chatId,
+    title: 'Nouvelle conversation',
+    messages: []
+  });
+  loadChat(chatId);
+  renderChatList();
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function loadChat(chatId) {
+  currentChatId = chatId;
+  const chat = chats.find(c => c.id === chatId);
+  if (chat) {
+    currentChat = chat.messages;
+    document.getElementById('messages').innerHTML = '';
+    chat.messages.forEach(msg => addMessage(msg.content, msg.isUser));
+  }
+}
+
+function renderChatList() {
+  const list = document.getElementById('chat-list');
+  list.innerHTML = '';
+  chats.forEach(chat => {
+    const div = document.createElement('div');
+    div.className = 'chat-item';
+    div.innerHTML = `<div class="chat-item-title">${chat.title}</div>`;
+    div.onclick = () => loadChat(chat.id);
+    list.appendChild(div);
+  });
+}
+
+function addMessage(content, isUser = false) {
+  const div = document.createElement('div');
+  div.className = 'message' + (isUser ? ' message-user' : '');
+  
+  const avatar = isUser ? '👤' : `<svg width="35" height="35" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <path d="M 70 40 Q 70 20, 100 20 Q 130 20, 130 50 Q 130 70, 100 80 L 100 100" 
+          fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="100" cy="120" r="8" fill="white"/>
+    <ellipse cx="85" cy="55" rx="8" ry="12" fill="white"/>
+    <ellipse cx="115" cy="55" rx="8" ry="12" fill="white"/>
+    <circle cx="85" cy="57" r="4" fill="#1e1b4b"/>
+    <circle cx="115" cy="57" r="4" fill="#1e1b4b"/>
+    <path d="M 75 145 Q 100 160, 125 145" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  </svg>`;
+  
+  if (isUser) {
+    div.innerHTML = `<div class="message-bubble">${content}</div><div class="avatar">${avatar}</div>`;
+  } else {
+    if (content.joke && !isPremium) {
+      div.innerHTML = `<div class="avatar">${avatar}</div><div class="message-bubble"><div class="joke">${content.joke}</div><div class="real">${content.real}</div></div>`;
+    } else {
+      div.innerHTML = `<div class="avatar">${avatar}</div><div class="message-bubble"><div class="real">${content.real || content}</div></div>`;
+    }
+  }
+  
+  document.getElementById('messages').appendChild(div);
+  document.getElementById('messages').scrollTop = 999999;
+  
+  currentChat.push({ content, isUser });
+}
+
+async function getBotResponse(userMessage) {
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        messages: [{
+          role: "user",
+          content: isPremium 
+            ? `Réponds de façon détaillée et professionnelle à cette question : ${userMessage}`
+            : `Réponds à cette question en deux parties :
+1. D'abord une blague légère ou jeu de mots en rapport (1 ligne)
+2. Puis un emoji 😄
+3. Ensuite ta réponse complète et détaillée
+
+Question : ${userMessage}`
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const fullText = data.content[0].text;
+    
+    if (isPremium) {
+      return { real: fullText };
+    }
+    
+    // Cherche le pattern blague + emoji + réponse
+    const parts = fullText.split(/😄|:smile:|🙂/);
+    if (parts.length >= 2) {
+      return { 
+        joke: parts[0].trim(), 
+        real: parts.slice(1).join('').trim() 
+      };
+    }
+    
+    // Cherche les premiers 1-2 phrases comme blague
+    const lines = fullText.split('\n').filter(l => l.trim());
+    if (lines.length >= 2) {
+      return {
+        joke: lines[0].trim(),
+        real: lines.slice(1).join('\n').trim()
+      };
+    }
+    
+    return { 
+      joke: "Question intéressante ! 🤔", 
+      real: fullText 
+    };
+    
+  } catch (error) {
+    return { 
+      joke: "Petit problème technique ! 🔧", 
+      real: "Réessaie dans un instant, je reviens tout de suite !" 
+    };
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const userMessage = input.value.trim();
+  if (!userMessage) return;
+  
+  if (!isPremium && messageCount >= FREE_LIMIT) {
+    showPremiumModal();
+    return;
+  }
+  
+  addMessage(userMessage, true);
+  input.value = '';
+  
+  if (!isPremium) messageCount++;
+  
+  addMessage('...', false);
+  
+  const botReply = await getBotResponse(userMessage);
+  
+  const messages = document.getElementById('messages');
+  messages.removeChild(messages.lastChild);
+  
+  addMessage(botReply, false);
+}
+
+document.getElementById('user-input').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+document.getElementById('menu-btn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+});
+
+document.getElementById('overlay').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('plus-menu').classList.remove('show');
+});
+
+document.getElementById('new-chat-btn').addEventListener('click', createNewChat);
+
+createNewChat();
+
+setTimeout(() => {
+  addMessage({
+    joke: "Bienvenue dans le chaos absolu ! 🎉",
+    real: "Salut ! Je suis ton assistant IA ! 🤪\n\nPose-moi n'importe quelle question : devoirs, sport, jeux, cuisine... Je réponds d'abord avec une blague légère, puis sérieusement !\n\nTu peux aussi m'envoyer des photos 📷 ou parler 🎤 (bouton +).\n\nEt teste le mode Entraînement École ! 📚\n\nTu as " + FREE_LIMIT + " messages gratuits ! 🚀"
+  }, false);
+}, 300);
+</script>
+</body>
+</html>
